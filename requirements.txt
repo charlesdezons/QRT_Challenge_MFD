@@ -6,3 +6,4 @@ seaborn
 scikit-learn
 jupyter
 notebook
+pymanopt[autograd]

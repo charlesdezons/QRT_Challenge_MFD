@@ -1,0 +1,38 @@
+Alors d'abord il faut utiliser cd et ls dans le terminal pour choisir où vous voulez cloner le repo. Une fois que vous êtes dans le bon fichier, genre Ponts/3A/Machine_Learning par exemple, vous faites:
+
+git clone https://github.com/charlesdezons/QRT_Challenge_MFD.git
+
+Puis vous ouvrez le repository avec:
+
+cd QRT_Challenge_MFD
+
+Puis ensuite ce serait carré qu'on puisse tous avoir le même environnement python, comme ça il n'y a pas de pbm de versions. Donc si vous avez miniconda c'est bien, vous faites:
+
+conda create -n QRT_Challenge python=3.10
+
+conda activate QRT_Challenge
+
+pip install -r requirements.txt
+
+Cette dernière ligne permet en fait qu'on ait les mêmes versions des packages etc, là j'ai juste mis les dernières versions, mais en gros si vous avez besoin de rajouter des librairies avec pip install, bah le mieux c'est de mettre le nom de la librairie dans le requirements.txt file, de le push, comme ça on a tous le meme fichier.
+
+Pour ce qui est de GitHub, avant de commencer à faire des changements, vous vérifiez que vous êtes bien dans le bon repo avec cd, ls etc. Une fois que vous êtes dans le bon repo, vous faites:
+
+conda activate QRT_Challenge
+
+Pour avoir le bon environnement. Ensuite vous vérifiez que vous êtes bien à jour avec la main branch en faisant: 
+
+git pull origin main
+
+Cela permet d'avoir le dernier code que les autres ont push sur GitHub.
+Donc là vous pouvez commencer à travailler sur le fichier python, vous faites tous vos petits changements, que ce soit sur le .ipynb, ou sur les remuements.txt ou quoi que ce soit d'autres.
+Ensuite vous pouvez ajouter et commit vos changements. En gros ça, ça crée juste un checkpoint qui enregistre votre code actuel, mais sans forcément le merger sur la branche principale. Donc ça peut être bien pour vous, de faire du version control, mais sur votre branche perso, mais en gros les autres ne le verront pas:
+
+git add .
+git commit -m "Ton message: par exemple: amélioration de telle fonction"
+
+Donc après ça, tu peux regarder l'historique de tes commits, si jamais t'as besoin de retrouver qqn que t'avais bien fait dans le passé. Pour ensuite push le travail sur la main branch, il faut faire:
+
+git push origin main
+
+Et après je crois qu'il faut aller sur GitHub et faire une pull request (ton dernier push apparaît) et là les autres regardent et approuvent le code ou pas.
