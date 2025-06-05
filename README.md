@@ -1,119 +1,95 @@
-# Challenge Context
+# 📊 Challenge Context
 
-A classic prediction problem in finance is to predict future **returns** (i.e. relative price variations) of a **stock market**. Given a market of *N* stocks with returns **Rₜ ∈ ℝᴺ** at time *t*, the goal is to design at each time *t* a vector **Sₜ₊₁ ∈ ℝᴺ**, using information available up to time *t*, such that the **prediction overlap** ⟨Sₜ₊₁, Rₜ₊₁⟩ is often positive.
+A classic prediction problem from finance is to predict the next *returns* (i.e. relative price variations) from a *stock market*. That is, given a stock market of \(N\) stocks having returns \(R_t \in \mathbb{R}^N\) at time \(t\), the goal is to design at each time \(t\) a vector \(S_{t+1} \in \mathbb{R}^N\) from the information available up to time \(t\) such that the prediction overlap \(\langle S_{t+1}, R_{t+1} \rangle\) is quite often positive. To be fair, this is not an easy task. In this challenge, we attack this problem armed with a **linear factor model where one learns the factors over an exotic non-linear parameter space**.
 
-This is not an easy task. In this challenge, we tackle it using a **linear factor model**, where the **factors are learned over an exotic non-linear parameter space**.
+> NB: There is a [dedicated forum](#) for this challenge.
 
-> There is a **dedicated forum** for this challenge.
+More precisely, the simplest estimators being the linear ones, a typical move is to consider a parametric model of the form
 
-## Linear Factor Model
+\[
+S_{t+1} := \sum_{\ell=1}^{F} \beta_\ell F_{t,\ell}
+\]
 
-A common linear prediction model takes the form:
-
-**Sₜ₊₁ = Σ (βₗ · Fₜ,ₗ), for ℓ = 1 to F**
-
-- Here, **Fₜ,ₗ ∈ ℝᴺ** are *explicative factors* (a.k.a. features)
-- **β₁, ..., β_F ∈ ℝ** are parameters learned from training data
-
-### Designing the Factors Fₜ,ₗ
-
-Typical financial features include:
-
-- **5-day normalized mean returns:** Rₜ⁽⁵⁾
-- **Momentum:** Mₜ = Rₜ⁽²³⁰⁾ − 20
-
-Where the m-day average return is defined as:
-
-**Rₜ⁽ᵐ⁾ = (1 / √m) · Σ Rₜ₊₁₋ₖ, for k = 1 to m**
-
-Instead of using predefined features, you can **learn the factors** as linear combinations of past returns:
-
-**Fₜ,ₗ = Σ (Aₖₗ · Rₜ₊₁₋ₖ), for k = 1 to D**
-
-- Aₗ = (A₁ₗ, ..., A_Dₗ) ∈ ℝᴰ
-- D is the *time depth* (e.g. 250 days)
-
-To ensure factor independence, the vectors Aₗ should be **orthonormal**:
-
-**⟨A_k, A_ℓ⟩ = δₖₗ** (i.e. dot product is 1 if k = ℓ, 0 otherwise)
+where the vectors \(F_{t,\ell} \in \mathbb{R}^N\) are **explicative factors** (a.k.a. features), usually designed from financial expertise, and \(\beta_1, \ldots, \beta_F \in \mathbb{R}\) are model parameters that can be fitted on a training data set.
 
 ---
 
-## Model Parameters
+## ❓ But how to design the factors \(F_{t,\ell}\)?
 
-The model is defined by:
+Factors that are “well known” in the trading world include the 5-day (normalized) mean returns \(R_t^{(5)}\) or the **Momentum** \(M_t := R_{t-20}^{(230)}\), where \(R_t^{(m)} := \frac{1}{\sqrt{m}} \sum_{k=1}^m R_{t+1-k}\). But if you know no finance and have developed enough taste for mathematical elegance, you may aim at learning the factors themselves within the simplest class of factors, namely linear functions of the past returns:
 
-- A matrix **A ∈ ℝᴰˣᶠ** with orthonormal columns: A = [A₁, ..., A_F]
-- A vector **β ∈ ℝᶠ**: β = (β₁, ..., β_F)
-
-This structure includes:
-- The two-factor model with Rₜ⁽⁵⁾ and Mₜ
-- The autoregressive (AR) model from time series
+\[
+F_{t,\ell} := \sum_{k=1}^{D} A_{k\ell} R_{t+1-k}
+\]
+where the vectors \(F_{t,\ell} \in \mathbb{R}^N\) are *explicative factors* (a.k.a. *features*), usually designed from financial expertise, and \(\beta_1, \ldots, \beta_F \in \mathbb{R}\) are model parameters that can be fitted on a training data set.
 
 ---
 
-## Challenge Goals
+## **But how to design the factors \(F_{t,\ell}\)?**
 
-The goal is to learn model parameters (A, β) from the **training dataset** (3 years of daily returns for 50 stocks), and test them on **a different set of 50 stocks** over the same period.
+Factors that are “well known” in the trading world include the 5-day (normalized) mean returns \(R_t^{(5)}\) or the **Momentum** \(M_t := R_{t-20}^{(230)}\), where 
 
-- Time depth: **D = 250**
-- Number of factors: **F = 10**
+\[
+R_t^{(m)} := \frac{1}{\sqrt{m}} \sum_{k=1}^m R_{t+1-k}.
+\]
 
-### Evaluation Metric
+But if you know no finance and have developed enough taste for mathematical elegance, you may aim at learning the factors themselves within the simplest class of factors, namely linear functions of the past returns:
 
-The metric to maximize is:
+\[
+F_{t,\ell} := \sum_{k=1}^D A_{k\ell} R_{t+1-k}
+\]
 
-**Metric(A, β) = (1 / 504) · Σ [⟨Sₜ, Rₜ⟩ / (‖Sₜ‖ · ‖Rₜ‖)], for t = 250 to 753**
+for some vectors \(A_\ell := (A_{k\ell}) \in \mathbb{R}^D\) and a fixed *time depth* parameter \(D\).
 
-Where:
-- Rₜ ∈ ℝ⁵⁰ is the return vector of test stocks
-- Sₜ is your prediction
+Well, we need to add a condition to create enough independence between the factors, since otherwise they may be redundant. One way to do this is to **assume the vectors \(A_\ell\)'s are orthonormal**, 
 
-If A does **not satisfy orthonormality** to within tolerance (|⟨Aᵢ, Aⱼ⟩ − δᵢⱼ| ≤ 1e-6), then:
+\[
+\langle A_k, A_\ell \rangle = \delta_{k\ell} \text{ for all } k, \ell,
+\]
 
-**Metric(A, β) = −1**
-
----
-
-## Output Format
-
-Expected output is a single vector:
-
-**Output ∈ ℝ²⁵¹⁰ = [A₁; ...; A₁₀; β]**
-
-That is, 10 vectors Aₗ ∈ ℝ²⁵⁰ followed by β ∈ ℝ¹⁰.
+which adds a non-linear constraint to the parameter space of our predictive model.
 
 ---
 
-## Data Description
+All in all, we thus have at hand a predictive parametric model with parameters:
 
-- **X_train:** DataFrame with daily returns for 50 stocks over 754 days  
-  (rows = stocks, columns = days)
+- a \(D \times F\) matrix \(A := [A_1, \ldots, A_F]\) with orthonormal columns,  
+- a vector \(\beta := (\beta_1, \ldots, \beta_F) \in \mathbb{R}^F\).
 
-- **Y_train:** Target return vectors (redundant, also contained in X_train)
+Note that it contains the two-factor model using \(R_t^{(5)}\) and \(M_t\) defined above, or the **autoregressive model AR** from time series analysis, as submodels.
 
-Use this data to learn the model parameters A and β.
+# Challenge Goals
+
+The goal of this challenge is to design/learn factors for stock return prediction using the exotic parameter space introduced in the context section.
+
+Participants will be able to use three-year data history of 50 stock from the same stock market (**training data set**) to provide the model parameters \((A, \beta)\) as outputs. Then the predictive model associated with these parameters will be tested to predict the returns of 50 **other** stocks over the **same** three-year time period (**testing data set**).
+
+> **We allow \(D = 250\)** days for the time depth and  
+> **\(F = 10\)** for the number of factors.
+
+---
+
+## Metric
+
+More precisely, we assess the quality of the predictive model with parameters \((A, \beta)\) as follows. Let \(\widetilde{R}_t \in \mathbb{R}^{50}\) be the returns of the 50 stocks of the testing data set over the three-year period (\(t = 0 \ldots 753\)) and let \(\widetilde{S}_t := \widetilde{S}_t(A, \beta)\) be the participants’ predictor for \(\widetilde{R}_t\). The metric to maximize is defined by
+
+\[
+\text{Metric}(A, \beta) := \frac{1}{504} \sum_{t=250}^{753} \frac{\langle \widetilde{S}_t, \widetilde{R}_t \rangle}{\| \widetilde{S}_t \| \| \widetilde{R}_t \|}
+\]
+
+if \(| \langle A_i, A_j \rangle - \delta_{ij} | \leq 10^{-6}\) for all \(i, j\) and  
+\[
+\text{Metric}(A, \beta) := -1
+\]
+otherwise.
+
+By construction the metric takes its values in \([-1, 1]\) and equals to \(-1\) as soon as there exists a couple \((i, j)\) breaking too much the orthonormality condition.
 
 ---
 
-## Benchmark Strategy
+## Output Structure
 
-A brute-force baseline works as follows:
+The output expected from the participants is a vector where the model parameters  
+\(A = [A_1, \ldots, A_{10}] \in \mathbb{R}^{250 \times 10}\) and  
+\(\beta \in \mathbb{R}^{10}\) are stacked as follows:
 
-1. Generate random A₁, ..., A₁₀ ∈ ℝ²⁵⁰ with orthonormal columns
-2. Fit β using linear regression
-3. Repeat many times
-4. Keep the (A, β) with best metric
-
-The **QRT benchmark** does:
-
-- Repeat N_iter = 1000:
-  - Sample matrix M ∈ ℝ²⁵⁰ˣ¹⁰ with N(0,1) entries
-  - Apply Gram-Schmidt to get orthonormal matrix A
-  - Fit β to minimize mean square error on training set
-  - Evaluate metric on training set
-- Return A and β that maximize this metric
-
-> **Note:** The orthonormality condition Aᵀ A = I defines the **Stiefel manifold** — a generalization of the orthogonal group. The benchmark samples uniformly from this space.
-
----
