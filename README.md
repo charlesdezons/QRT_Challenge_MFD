@@ -1,14 +1,14 @@
 # 📊 Challenge Context
 
-A classic prediction problem from finance is to predict the next *returns* (i.e. relative price variations) from a *stock market*. That is, given a stock market of $\(N\)$ stocks having returns $\(R_t \in \mathbb{R}^N\)$ at time \(t\), the goal is to design at each time \(t\) a vector \(S_{t+1} \in \mathbb{R}^N\) from the information available up to time \(t\) such that the prediction overlap \(\langle S_{t+1}, R_{t+1} \rangle\) is quite often positive. To be fair, this is not an easy task. In this challenge, we attack this problem armed with a **linear factor model where one learns the factors over an exotic non-linear parameter space**.
+A classic prediction problem from finance is to predict the next *returns* (i.e. relative price variations) from a *stock market*. That is, given a stock market of $\N\$ stocks having returns $\(R_t \in \mathbb{R}^N\)$ at time \(t\), the goal is to design at each time \(t\) a vector \(S_{t+1} \in \mathbb{R}^N\) from the information available up to time \(t\) such that the prediction overlap \(\langle S_{t+1}, R_{t+1} \rangle\) is quite often positive. To be fair, this is not an easy task. In this challenge, we attack this problem armed with a **linear factor model where one learns the factors over an exotic non-linear parameter space**.
 
 > NB: There is a [dedicated forum](#) for this challenge.
 
 More precisely, the simplest estimators being the linear ones, a typical move is to consider a parametric model of the form
 
-\[
+$\[
 S_{t+1} := \sum_{\ell=1}^{F} \beta_\ell F_{t,\ell}
-\]
+\]$
 
 where the vectors \(F_{t,\ell} \in \mathbb{R}^N\) are **explicative factors** (a.k.a. features), usually designed from financial expertise, and \(\beta_1, \ldots, \beta_F \in \mathbb{R}\) are model parameters that can be fitted on a training data set.
 
