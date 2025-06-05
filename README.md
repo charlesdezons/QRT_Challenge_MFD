@@ -6,9 +6,9 @@ A classic prediction problem from finance is to predict the next *returns* (i.e.
 
 More precisely, the simplest estimators being the linear ones, a typical move is to consider a parametric model of the form
 
-$\
+\[
 S_{t+1} := \sum_{\ell=1}^{F} \beta_\ell F_{t,\ell}
-$/
+\]
 
 where the vectors \(F_{t,\ell} \in \mathbb{R}^N\) are **explicative factors** (a.k.a. features), usually designed from financial expertise, and \(\beta_1, \ldots, \beta_F \in \mathbb{R}\) are model parameters that can be fitted on a training data set.
 
